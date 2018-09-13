@@ -16,7 +16,9 @@ export default class App extends Component {
         places: prevState.places.concat({
           key: Math.random(),
           name: placeName,
-          image: PlaceImage
+          image: {
+            uri:"http://www.city-data.com/forum/attachments/world/99894d1345310917-most-beautiful-place-world-altay4.jpg"
+          }
         })
       };
     });
