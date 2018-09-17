@@ -6,6 +6,37 @@ const initialState = {
 };
 const reducer = (state = initialState, action) =>{
     switch(action.type){
+        case ADD_PLACE: 
+        return {
+            ...state,
+            places: state.places.concat({
+                key: Math.random().toString(),
+                name: action.placeName,
+                image: {
+                  uri:"http://www.city-data.com/forum/attachments/world/99894d1345310917-most-beautiful-place-world-altay4.jpg"
+                }
+              })
+        };
+        case DELETE_PLACE:
+        return {
+            ...state,
+            places: state.places.filter(place => {
+                return place.key !== state.selectedPlace.key;
+              }),
+              selectedPlace: null
+        };
+        case SELECT_PLACE:
+        return {
+            ...state,
+            selectedPlace : state.places.find(place =>{
+                return place.key === action.placeKey;  
+              })
+        };
+        case DESELECT_PLACE:
+        return {
+            ...state,
+            selectedPlace : null
+        };
         default:
         return state;
     }
