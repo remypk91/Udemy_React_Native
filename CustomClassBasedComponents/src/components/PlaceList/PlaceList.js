@@ -14,7 +14,7 @@ const placeList = props => {
             <ListItem 
              placeName = {info.item.name} 
              placeImage = {info.item.image}
-             onItemPressed = {() => props.onItemSeleted(info.item.key.toString())}
+             onItemPressed = {() => props.onItemSeleted(info.item.key)}
         />
         )}
         />
