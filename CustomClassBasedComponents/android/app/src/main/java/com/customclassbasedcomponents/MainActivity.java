@@ -1,6 +1,6 @@
 package com.customclassbasedcomponents;
 
-com.reactnativenavigation.controllers.SplashActivity
+import com.reactnativenavigation.controllers.SplashActivity;
 
 public class MainActivity extends SplashActivity {
 
