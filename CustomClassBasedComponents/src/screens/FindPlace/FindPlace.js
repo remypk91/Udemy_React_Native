@@ -1,9 +1,19 @@
 import  React, {Component} from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, TouchableOpacity,StyleSheet, Animated} from 'react-native';
 import  PlaceList from '../../components/PlaceList/PlaceList';
 import  {connect} from "react-redux";
 
 class FindPlaceScreen extends  Component{
+
+    static navigatorStyle = {
+        navBarButtonColor : "orange"
+    }
+
+    state = {
+        placesLoaded : false,
+        removeAnim: new Animated.valueOf(1)
+
+    }
 
     constructor(props){
         super(props);
@@ -21,6 +31,12 @@ class FindPlaceScreen extends  Component{
         }
     }
 
+    placesSearchHandler = () => {
+        this.setState ({
+            placesLoaded : true
+        });
+    }
+
     itemSelectedHandler = key => {
         const selPlace  = this.props.places.find(place =>{
             return place.key === key;
@@ -35,10 +51,25 @@ class FindPlaceScreen extends  Component{
         });
     }
     render(){
+
+        let content = (
+            <TouchableOpacity onPress = {this.placesSearchHandler}>
+                <View style={styles.buttonSearch}>
+                    <Text style={styles.searchButtonText}>Find Places</Text>
+                </View>
+            </TouchableOpacity>
+        );
+
+        if (this.state.placesLoaded){
+            content = (
+                <PlaceList places = {this.props.places} onItemSeleted={this.itemSelectedHandler}/>
+            );
+        }
+
         return(
 
-            <View>
-                <PlaceList places = {this.props.places} onItemSeleted={this.itemSelectedHandler}/>
+            <View style={this.state.placesLoaded ? null : styles.buttonContainer}>
+                {content}
                 {/*<Text>on Find Places Screen</Text>*/}
             </View>
         );
@@ -50,6 +81,28 @@ const  mapStateToProps = state  => {
         places : state.places.places
     };
 };
+
+const styles = StyleSheet.create({
+    buttonContainer:{
+        flex:1,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    listContainer:{
+
+    },
+    buttonSearch:{
+        borderColor:"orange",
+        borderWidth: 3,
+        borderRadius:15,
+        padding: 20
+    },
+    searchButtonText:{
+        color:"orange",
+        fontWeight: "bold",
+        fontSize:26
+    }
+});
 
 
 

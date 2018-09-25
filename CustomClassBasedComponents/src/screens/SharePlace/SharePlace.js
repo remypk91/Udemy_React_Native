@@ -12,6 +12,10 @@ import imagePlaceholder  from "../../assets/beautiful-place.jpg";
 
 class SharePlaceScreen extends  Component{
 
+    static navigatorStyle = {
+        navBarButtonColor : "orange"
+    }
+
     state = {
         placeName: ""
     };

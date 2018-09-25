@@ -43,11 +43,17 @@ const startTabs = () => {
                     }
                 }
             ],
+            tabsStyle:{
+                tabBarSelectedButtonColor:"orange"
+            },
             drawer: {
                 left:{
                     screen:"CustomClassBasedComponents.SideDrawer"
                 }
-            }
+            },
+            appStyle:{
+                tabBarSelectedButtonColor:"orange"
+            },
         });
     });
 
