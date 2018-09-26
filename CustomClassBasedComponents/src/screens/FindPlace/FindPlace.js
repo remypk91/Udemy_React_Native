@@ -11,7 +11,8 @@ class FindPlaceScreen extends  Component{
 
     state = {
         placesLoaded : false,
-        removeAnim: new Animated.valueOf(1)
+        removeAnimation: new Animated.Value(1),
+        removeListAnim: new Animated.Value(0)
 
     }
 
@@ -31,9 +32,25 @@ class FindPlaceScreen extends  Component{
         }
     }
 
+    placesLoadedHandler = () => {
+        Animated.timing(this.state.removeListAnim,{
+            toValue:1,
+            duration: 500,
+            useNativeDriver: true
+        }).start();
+
+    }
+
     placesSearchHandler = () => {
-        this.setState ({
-            placesLoaded : true
+        Animated.timing(this.state.removeAnimation,{
+            toValue: 0,
+            duration:500,
+            useNativeDriver: true
+        }).start(() => {
+            this.setState({
+                placesLoaded: true
+            });
+            this.placesLoadedHandler()
         });
     }
 
@@ -53,16 +70,34 @@ class FindPlaceScreen extends  Component{
     render(){
 
         let content = (
-            <TouchableOpacity onPress = {this.placesSearchHandler}>
-                <View style={styles.buttonSearch}>
-                    <Text style={styles.searchButtonText}>Find Places</Text>
-                </View>
-            </TouchableOpacity>
+
+            <Animated.View style={{
+                opacity:this.state.removeAnimation,
+                transform: [
+                    {
+                        scale: this.state.removeAnimation.interpolate({
+                            inputRange: [0,1],
+                            outputRange: [12,1]
+                        })
+                    }
+                ]
+            }}>
+                <TouchableOpacity onPress = {this.placesSearchHandler}>
+                    <View style={styles.buttonSearch}>
+                        <Text style={styles.searchButtonText}>Find Places</Text>
+                    </View>
+                </TouchableOpacity>
+            </Animated.View>
+
         );
 
         if (this.state.placesLoaded){
             content = (
+                <Animated.View style={{
+                    opacity: this.state.removeListAnim
+                }}>
                 <PlaceList places = {this.props.places} onItemSeleted={this.itemSelectedHandler}/>
+                </Animated.View>
             );
         }
 
