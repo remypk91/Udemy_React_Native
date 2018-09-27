@@ -1,5 +1,5 @@
 import  React, {Component} from 'react';
-import {View, Text, Button, TextInput, ScrollView, StyleSheet,Image} from 'react-native';
+import {View, Text, Button, TextInput, ScrollView, StyleSheet,KeyboardAvoidingView} from 'react-native';
 import  {connect} from 'react-redux';
 import  PlaceInput from "../../components/PlaceInput/PlaceInput";
 import PickImage from "../../components/PickImage/PickImage";
@@ -8,7 +8,10 @@ import MainText from "../../components/UI/MainText/MainText";
 import HeadingText from "../../components/UI/HeadingText/HeadingText";
 
 import {addPlace} from '../../store/actions/index';
-import imagePlaceholder  from "../../assets/beautiful-place.jpg";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import validate from "../../utility/validation";
+import ButtonWithBackground from "../../components/UI/ButtonWithBackground/ButtonWithBackground";
+import DefaultInput from "../../components/UI/DefaultInput/DefaultInput";
 
 class SharePlaceScreen extends  Component{
 
@@ -17,12 +20,23 @@ class SharePlaceScreen extends  Component{
     }
 
     state = {
-        placeName: ""
+        controls: {
+            placeName: {
+                value: "",
+                valid: false,
+                touched: false,
+                validationRules: {
+                    notEmpty: true
+                }
+            }
+        }
     };
 
     constructor(props){
         super(props);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
+
+
     }
 
     onNavigatorEvent = event => {
@@ -37,36 +51,58 @@ class SharePlaceScreen extends  Component{
     }
 
 
+
+
     placeNameChangedHandler = val => {
-        this.setState({
-            placeName: val
+        this.setState(prevState => {
+            return {
+                controls: {
+                    ...prevState.controls,
+                    placeName: {
+                        ...prevState.controls.placeName,
+                        value: val,
+                        valid: validate(val, prevState.controls.placeName.validationRules),
+                        touched: true
+                    }
+                }
+            };
         });
     };
 
     placeAddedHandler = () => {
-        if (this.state.placeName.trim() !== ""){
-            this.props.onAddPlace(this.state.placeName);
+        if (this.state.controls.placeName.value.trim() !== ""){
+            this.props.onAddPlace(this.state.controls.placeName.value);
         }
 
     }
 
     render(){
         return(
-            <ScrollView>
-                <View style = {styles.container}>
+            <KeyboardAwareScrollView>
+                <View  style = {styles.container}>
                     <MainText><HeadingText>Share a Place with us!</HeadingText></MainText>
                     <PickImage/>
                     <PickLocation/>
                 <PlaceInput
-                    placeName = {this.state.placeName}
-                    onChangeText = {this.placeNameChangedHandler}
+
+                    placeData={this.state.controls.placeName}
+                    onChangeText={this.placeNameChangedHandler}
                 />
                 {/*<PlaceInput onPlaceAdded = {this.placeAddedHandler}/>*/}
                 <View style={styles.button}>
-                <Button title = "Share the place!" onPress={this.placeAddedHandler}/>
+                    <ButtonWithBackground
+                        color="#29aaf4"
+                        onPress={this.placeAddedHandler}
+                        disabled={
+                            !this.state.controls.placeName.valid
+                        }
+                    >
+                        Share the place!
+                    </ButtonWithBackground>
+                {/*<Button title = "Share the place!" onPress={this.placeAddedHandler} style={this.state.controls.placeName.valid ? null : styles.disabled}/>*/}
                 </View>
                 </View>
-            </ScrollView>
+            </KeyboardAwareScrollView>
         );
     }
 }
@@ -100,6 +136,11 @@ const styles = StyleSheet.create({
     previewImage:{
         width:"100%",
         height:"100%"
+    },
+    disabled:{
+        borderColor: "#aaa",
+        backgroundColor: "#eee"
+
     }
 });
 
