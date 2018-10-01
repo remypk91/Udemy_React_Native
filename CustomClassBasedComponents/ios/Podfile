@@ -7,6 +7,8 @@ target 'CustomClassBasedComponents' do
 
   # Pods for CustomClassBasedComponents
 
+  pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
+
   target 'CustomClassBasedComponentsTests' do
     inherit! :search_paths
     # Pods for testing

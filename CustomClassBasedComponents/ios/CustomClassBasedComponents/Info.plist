@@ -37,10 +37,18 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Let's take picture!</string>
 	<key>NSLocationUsageDescription</key>
 	<string>let's share place!</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>hi</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string/>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Let's share image!</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Let's share image!</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Entypo.ttf</string>
