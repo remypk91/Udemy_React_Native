@@ -3,6 +3,7 @@ import {View, Image, Text, Button, StyleSheet, TouchableOpacity, Platform, Dimen
 import Icon from "react-native-vector-icons/Ionicons";
 import {connect} from 'react-redux';
 import {deletePlace} from '../../store/actions/index'
+import MapView from "react-native-maps";
 
 class PlaceDetailScreen extends Component {
 
@@ -34,50 +35,92 @@ class PlaceDetailScreen extends Component {
 
     render() {
         return (
-            <View style={this.state.viewMode === "portrait" ? styles.portraitContainer : styles.landscapeContainer}>
-                <View style={this.state.viewMode === "landscape" ? styles.landscapePlaceImageContainer : []}>
-                    <Image source={this.props.selectedPlace.image} style={styles.placeImage}/>
-                    <Text style={styles.placeName}>{this.props.selectedPlace.name}</Text>
+            <View
+                style={[
+                    styles.container,
+                    this.state.viewMode === "portrait"
+                        ? styles.portraitContainer
+                        : styles.landscapeContainer
+                ]}
+            >
+                <View style={styles.placeDetailContainer}>
+                    <View style={styles.subContainer}>
+                        <Image
+                            source={this.props.selectedPlace.image}
+                            style={styles.placeImage}
+                        />
+                    </View>
+                    <View style={styles.subContainer}>
+                        <MapView
+                            initialRegion={{
+                                ...this.props.selectedPlace.location,
+                                latitudeDelta: 0.0122,
+                                longitudeDelta:
+                                    Dimensions.get("window").width /
+                                    Dimensions.get("window").height *
+                                    0.0122
+                            }}
+                            style={styles.map}
+                        >
+                            <MapView.Marker coordinate={this.props.selectedPlace.location} />
+                        </MapView>
+                    </View>
                 </View>
-                <View style={this.state.viewMode === "portrait" ? [] : styles.landscapeDeleteButtonContainer}>
-                    <TouchableOpacity onPress={this.placeDeletedHandler}>
-                        <View style={styles.deleteButton}>
-                            <Icon size={30} name={Platform.OS === "ios" ? "ios-trash" : "md-trash"} color="red"/>
-                        </View>
-                    </TouchableOpacity>
-                    {/*<Button title="Delete" color="red" onPress={props.onItemDeleted}/>*/}
+                <View style={styles.subContainer}>
+                    <View>
+                        <Text style={styles.placeName}>
+                            {this.props.selectedPlace.name}
+                        </Text>
+                    </View>
+                    <View>
+                        <TouchableOpacity onPress={this.placeDeletedHandler}>
+                            <View style={styles.deleteButton}>
+                                <Icon
+                                    size={30}
+                                    name={Platform.OS === "android" ? "md-trash" : "ios-trash"}
+                                    color="red"
+                                />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>);
+            </View>
+        );
     }
 };
 
 
 const styles = StyleSheet.create({
-
+    container: {
+        margin: 22,
+        flex: 1
+    },
     portraitContainer: {
-        marginTop: 22
+        flexDirection: "column"
     },
     landscapeContainer: {
-        marginTop: 22,
-        flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "center"
+        flexDirection: "row"
     },
-    landscapePlaceImageContainer: {width: "90%", padding: 10},
-    landscapeDeleteButtonContainer: {
-        width: "10%",
-        alignItems: "center"
+    placeDetailContainer: {
+        flex: 2
     },
     placeImage: {
         width: "100%",
-        height: 200
+        height: "100%"
     },
     placeName: {
         fontWeight: "bold",
-        textAlign: "center"
+        textAlign: "center",
+        fontSize: 28
+    },
+    map: {
+        ...StyleSheet.absoluteFillObject
     },
     deleteButton: {
-        alignItems: 'center'
+        alignItems: "center"
+    },
+    subContainer: {
+        flex: 1
     }
 });
 

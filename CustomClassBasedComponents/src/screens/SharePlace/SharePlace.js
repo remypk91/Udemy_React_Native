@@ -13,6 +13,7 @@ import validate from "../../utility/validation";
 import ButtonWithBackground from "../../components/UI/ButtonWithBackground/ButtonWithBackground";
 import DefaultInput from "../../components/UI/DefaultInput/DefaultInput";
 
+
 class SharePlaceScreen extends  Component{
 
     static navigatorStyle = {
@@ -28,6 +29,10 @@ class SharePlaceScreen extends  Component{
                 validationRules: {
                     notEmpty: true
                 }
+            },
+            location : {
+                value:null,
+                valid: false
             }
         }
     };
@@ -69,10 +74,22 @@ class SharePlaceScreen extends  Component{
         });
     };
 
+    locationPickedHandler = location => {
+        this.setState(prevState =>{
+            return{
+                controls:{
+                    ...prevState.controls,
+                    location:{
+                        value: location,
+                        valid: true
+                    }
+                }
+            }
+        })
+    }
+
     placeAddedHandler = () => {
-        if (this.state.controls.placeName.value.trim() !== ""){
-            this.props.onAddPlace(this.state.controls.placeName.value);
-        }
+        this.props.onAddPlace(this.state.controls.placeName.value, this.state.controls.location.value);
 
     }
 
@@ -82,7 +99,7 @@ class SharePlaceScreen extends  Component{
                 <View  style = {styles.container}>
                     <MainText><HeadingText>Share a Place with us!</HeadingText></MainText>
                     <PickImage/>
-                    <PickLocation/>
+                    <PickLocation onLocationPick={this.locationPickedHandler}/>
                 <PlaceInput
 
                     placeData={this.state.controls.placeName}
@@ -94,7 +111,7 @@ class SharePlaceScreen extends  Component{
                         color="#29aaf4"
                         onPress={this.placeAddedHandler}
                         disabled={
-                            !this.state.controls.placeName.valid
+                            !this.state.controls.placeName.valid || !this.state.controls.location.valid
                         }
                     >
                         Share the place!
@@ -109,7 +126,7 @@ class SharePlaceScreen extends  Component{
 
 const  mapDispatchToProps = dispatch => {
    return {
-       onAddPlace : (placeName) => dispatch(addPlace(placeName))
+       onAddPlace : (placeName,location) => dispatch(addPlace(placeName,location))
    };
 };
 

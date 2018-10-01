@@ -13,7 +13,8 @@ const reducer = (state = initialState, action) =>{
                 name: action.placeName,
                 image: {
                   uri:"http://www.city-data.com/forum/attachments/world/99894d1345310917-most-beautiful-place-world-altay4.jpg"
-                }
+                },
+                location: action.location
               })
         };
         case DELETE_PLACE:

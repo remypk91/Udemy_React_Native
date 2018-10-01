@@ -37,6 +37,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSLocationUsageDescription</key>
+	<string>let's share place!</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>hi</string>
 	<key>UIAppFonts</key>
