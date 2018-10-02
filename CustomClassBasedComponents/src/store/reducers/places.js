@@ -12,7 +12,7 @@ const reducer = (state = initialState, action) =>{
                 key: Math.random().toString(),
                 name: action.placeName,
                 image: {
-                  uri:"http://www.city-data.com/forum/attachments/world/99894d1345310917-most-beautiful-place-world-altay4.jpg"
+                  uri:action.image.uri
                 },
                 location: action.location
               })

@@ -33,6 +33,10 @@ class SharePlaceScreen extends  Component{
             location : {
                 value:null,
                 valid: false
+            }, 
+            image : {
+                value : null,
+                valid : false
             }
         }
     };
@@ -55,7 +59,20 @@ class SharePlaceScreen extends  Component{
         }
     }
 
+    imagePickedHandler = image => {
 
+        this.setState(prevState => {
+            return{
+                controls: {
+                    ...prevState.controls,
+                    image:{
+                        value: image,
+                        valid: true
+                    }
+                }
+            };
+        });
+    }
 
 
     placeNameChangedHandler = val => {
@@ -89,7 +106,9 @@ class SharePlaceScreen extends  Component{
     }
 
     placeAddedHandler = () => {
-        this.props.onAddPlace(this.state.controls.placeName.value, this.state.controls.location.value);
+        this.props.onAddPlace(this.state.controls.placeName.value,
+             this.state.controls.location.value,
+             this.state.controls.image.value);
 
     }
 
@@ -98,7 +117,7 @@ class SharePlaceScreen extends  Component{
             <KeyboardAwareScrollView>
                 <View  style = {styles.container}>
                     <MainText><HeadingText>Share a Place with us!</HeadingText></MainText>
-                    <PickImage/>
+                    <PickImage onImagePicked={this.imagePickedHandler}/>
                     <PickLocation onLocationPick={this.locationPickedHandler}/>
                 <PlaceInput
 
@@ -111,7 +130,9 @@ class SharePlaceScreen extends  Component{
                         color="#29aaf4"
                         onPress={this.placeAddedHandler}
                         disabled={
-                            !this.state.controls.placeName.valid || !this.state.controls.location.valid
+                            !this.state.controls.placeName.valid ||
+                             !this.state.controls.location.valid ||
+                             !this.state.controls.image.valid
                         }
                     >
                         Share the place!
@@ -126,7 +147,7 @@ class SharePlaceScreen extends  Component{
 
 const  mapDispatchToProps = dispatch => {
    return {
-       onAddPlace : (placeName,location) => dispatch(addPlace(placeName,location))
+       onAddPlace : (placeName,location,image) => dispatch(addPlace(placeName,location, image))
    };
 };
 
