@@ -1,5 +1,5 @@
 import  React, {Component} from 'react';
-import {View, Text, Button, TextInput, ScrollView, StyleSheet,KeyboardAvoidingView} from 'react-native';
+import {View, Text, Button, TextInput, ScrollView, StyleSheet,KeyboardAvoidingView,ActivityIndicator} from 'react-native';
 import  {connect} from 'react-redux';
 import  PlaceInput from "../../components/PlaceInput/PlaceInput";
 import PickImage from "../../components/PickImage/PickImage";
@@ -113,8 +113,24 @@ class SharePlaceScreen extends  Component{
     }
 
     render(){
+
+        let submitButton = ( <ButtonWithBackground
+            color="#29aaf4"
+            onPress={this.placeAddedHandler}
+            disabled={
+                !this.state.controls.placeName.valid ||
+                 !this.state.controls.location.valid ||
+                 !this.state.controls.image.valid
+            }
+        >
+            Share the place!
+        </ButtonWithBackground>);
+        if (this.props.isLoading){
+            submitButton = <ActivityIndicator/>
+        }
+
         return(
-            <KeyboardAwareScrollView>
+            <KeyboardAwareScrollView  behavior="padding">
                 <View  style = {styles.container}>
                     <MainText><HeadingText>Share a Place with us!</HeadingText></MainText>
                     <PickImage onImagePicked={this.imagePickedHandler}/>
@@ -126,22 +142,18 @@ class SharePlaceScreen extends  Component{
                 />
                 {/*<PlaceInput onPlaceAdded = {this.placeAddedHandler}/>*/}
                 <View style={styles.button}>
-                    <ButtonWithBackground
-                        color="#29aaf4"
-                        onPress={this.placeAddedHandler}
-                        disabled={
-                            !this.state.controls.placeName.valid ||
-                             !this.state.controls.location.valid ||
-                             !this.state.controls.image.valid
-                        }
-                    >
-                        Share the place!
-                    </ButtonWithBackground>
+                 {submitButton}   
                 {/*<Button title = "Share the place!" onPress={this.placeAddedHandler} style={this.state.controls.placeName.valid ? null : styles.disabled}/>*/}
                 </View>
                 </View>
             </KeyboardAwareScrollView>
         );
+    }
+}
+
+const mapStateToProps = state => {
+    return {
+        isLoading : state.ui.isLoading
     }
 }
 
@@ -183,4 +195,4 @@ const styles = StyleSheet.create({
 });
 
 
- export  default connect(null,mapDispatchToProps)(SharePlaceScreen);
+ export  default connect(mapStateToProps,mapDispatchToProps)(SharePlaceScreen);
