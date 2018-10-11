@@ -44,6 +44,7 @@ export const addPlace = (placeName,location,image) => {
 };
 
 export const getPlaces = () => {
+
     return dispatch => {
         fetch("https://reactnativecrash-1538034208806.firebaseio.com/places.json")
         .catch(err =>{
@@ -51,15 +52,16 @@ export const getPlaces = () => {
             console.log(err);
         }).then(res => res.json())
         .then(parsedResp =>{
+            
             const places = [];
             for (let key in parsedResp){
                 places.push({
                     ...parsedResp[key],
                     image: {uri:parsedResp[key].image},
-                    id: key
+                    key: key
                 });
             }
-            dispatch(setPlaces());
+            dispatch(setPlaces(places));
         });
     };
 };

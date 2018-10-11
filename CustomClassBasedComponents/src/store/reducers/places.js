@@ -8,8 +8,8 @@ const reducer = (state = initialState, action) =>{
         case SET_PLACES:
         return {
             ...state,
-            places=  action.places
-        };
+            places: action.places
+          };
         case DELETE_PLACE:
         return {
             ...state,
