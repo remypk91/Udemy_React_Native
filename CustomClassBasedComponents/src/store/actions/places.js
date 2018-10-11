@@ -47,10 +47,7 @@ export const getPlaces = () => {
 
     return dispatch => {
         fetch("https://reactnativecrash-1538034208806.firebaseio.com/places.json")
-        .catch(err =>{
-            alert("Something went wrong, Please try later!");
-            console.log(err);
-        }).then(res => res.json())
+        .then(res => res.json())
         .then(parsedResp =>{
             
             const places = [];
@@ -62,6 +59,9 @@ export const getPlaces = () => {
                 });
             }
             dispatch(setPlaces(places));
+        }).catch(err =>{
+            alert("Something went wrong, Please try later!");
+            console.log(err);
         });
     };
 };
