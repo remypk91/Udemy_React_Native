@@ -1,4 +1,4 @@
-import {ADD_PLACE,DELETE_PLACE,SELECT_PLACE,DESELECT_PLACE} from './actionTypes'
+import {DELETE_PLACE,SELECT_PLACE,DESELECT_PLACE,SET_PLACES} from './actionTypes'
 import {uiStartLoading, uiStopLoading} from './ui'
 
 export const addPlace = (placeName,location,image) => {
@@ -14,6 +14,7 @@ export const addPlace = (placeName,location,image) => {
             body: JSON.stringify(placeData)
         }).catch(err => {
             console.log(err);
+            alert("Something went wrong, Please try again!! ")
             dispatch(uiStopLoading());
         })
         .then(res => console.log(res))
@@ -40,6 +41,34 @@ export const addPlace = (placeName,location,image) => {
     //     }) ; 
         
     // };
+};
+
+export const getPlaces = () => {
+    return dispatch => {
+        fetch("https://reactnativecrash-1538034208806.firebaseio.com/places.json")
+        .catch(err =>{
+            alert("Something went wrong, Please try later!");
+            console.log(err);
+        }).then(res => res.json())
+        .then(parsedResp =>{
+            const places = [];
+            for (let key in parsedResp){
+                places.push({
+                    ...parsedResp[key],
+                    image: {uri:parsedResp[key].image},
+                    id: key
+                });
+            }
+            dispatch(setPlaces());
+        });
+    };
+};
+
+export const setPlaces = places => {
+    return {
+        type: SET_PLACES,
+        places: places
+    };
 };
 
 export const deletePlace = (key) => {
