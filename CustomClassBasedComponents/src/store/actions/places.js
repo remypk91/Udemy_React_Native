@@ -1,5 +1,5 @@
 import {DELETE_PLACE,SELECT_PLACE,DESELECT_PLACE,SET_PLACES} from './actionTypes'
-import {uiStartLoading, uiStopLoading} from './ui'
+import {uiStartLoading, uiStopLoading, authGetToken} from './index'
 
 export const addPlace = (placeName,location,image) => {
 
@@ -46,7 +46,13 @@ export const addPlace = (placeName,location,image) => {
 export const getPlaces = () => {
 
     return dispatch => {
-        fetch("https://reactnativecrash-1538034208806.firebaseio.com/places.json")
+        dispatch(authGetToken())
+        .then(token => {
+            return  fetch("https://reactnativecrash-1538034208806.firebaseio.com/places.json?auth="+token);
+        })
+        .catch(() => {
+            alert(" invalid token!");
+        })
         .then(res => res.json())
         .then(parsedResp =>{
             

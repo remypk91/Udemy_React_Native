@@ -38,7 +38,7 @@ export const tryAuth = (authData, authMode) => {
           alert("Authentication failed, please try again!");
         } else {
             
-          //dispatch(authSetToken(parsedRes.idToken));
+          dispatch(authSetToken(parsedRes.idToken));
           startMainTabs();
         }
       });
@@ -50,4 +50,18 @@ export const authSetToken = token => {
     type: AUTH_SET_TOKEN,
     token: token
   };
+};
+
+export const authGetToken = () => {
+    return (dispatch, getState) => {
+        const promise = new Promise((resolve, reject) => {
+            const token = getState().auth.token;
+            if (!token) {
+                reject();
+            } else {
+                resolve(token);
+            }
+        });  
+        return promise;
+    };
 };
