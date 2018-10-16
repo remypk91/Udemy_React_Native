@@ -5,7 +5,7 @@ import startMainTabs from "../../screens/MainTabs/startMainTabs";
 
 import App from "../../../App";
 
-const API_KEY = "AIzaSyDNf5CRpYvChgMRI4pMG8fI41lvg3i0iWs";
+const API_KEY = "";
 
 export const tryAuth = (authData, authMode) => {
   return dispatch => {
