@@ -1,18 +1,21 @@
+import {AsyncStorage} from "react-native";
 import { TRY_AUTH, AUTH_SET_TOKEN } from "./actionTypes";
 import { uiStartLoading, uiStopLoading } from "./index";
 import startMainTabs from "../../screens/MainTabs/startMainTabs";
 
+const API_KEY = "";
+
 export const tryAuth = (authData, authMode) => {
   return dispatch => {
     dispatch(uiStartLoading());
-    const apiKey = "";
+    
     let url =
       "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=" +
-      apiKey;
+      API_KEY;
     if (authMode === "signup") {
       url =
         "https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=" +
-        apiKey;
+        API_KEY;
     }
     fetch(url, {
       method: "POST",
@@ -38,10 +41,23 @@ export const tryAuth = (authData, authMode) => {
           alert("Authentication failed, please try again!");
         } else {
             
-          dispatch(authSetToken(parsedRes.idToken));
+          dispatch(authStoreToken(parsedRes.idToken, parsedRes.expiresIn, parsedRes.refreshToken));
           startMainTabs();
         }
       });
+  };
+};
+
+export const authStoreToken = (token, expiresIn, refreshToken) => {
+
+  return dispatch => {
+    dispatch(authSetToken(token));
+    const now = new Date();
+    const expiryDate = now.getTime() + expiresIn * 1000;
+    // console.log(now, new Date(expiryDate));
+    AsyncStorage.setItem("ccbc:auth:token", token);
+    AsyncStorage.setItem("ccbc:auth:expiryDate", expiryDate.toString());
+    AsyncStorage.setItem("ccbc:auth:refreshToken", refreshToken);
   };
 };
 
@@ -57,11 +73,81 @@ export const authGetToken = () => {
         const promise = new Promise((resolve, reject) => {
             const token = getState().auth.token;
             if (!token) {
-                reject();
+              let fetchedToken;
+                AsyncStorage.getItem("ccbc:auth:token")
+                .catch(err => reject())
+                .then(tokenFromStorage => {
+                  fetchedToken = tokenFromStorage;
+                  if(!tokenFromStorage){
+                    reject();
+                    return;
+                  }
+                  return AsyncStorage.getItem("ccbc:auth:expiryDate");
+                  
+                })
+                .then(expiryDate => {
+                  const parsedExpiryDate = new Date(parseInt(expiryDate));
+                  const now = new Date();
+                  if (parsedExpiryDate > now){
+                    dispatch(authSetToken(fetchedToken));
+                    resolve(fetchedToken);
+                  }else{
+                    reject();
+                  }
+                  
+                })
+                .catch(err => reject())
             } else {
                 resolve(token);
             }
         });  
-        return promise;
+        return promise.
+        catch(err => {
+          return AsyncStorage.getItem("ccbc:auth:refreshToken")
+          .then(refreshToken =>{
+           return fetch("https://securetoken.googleapis.com/v1/token?key="+API_KEY,{
+              method:"POST",
+              headers:{
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              body: "grant_type=refresh_token&refresh_token="+refreshToken
+            });
+          })
+          .then(res => res.json())
+          .then(parsedRes => {
+            if(parsedRes.id_token){
+              console.log("refresh token worked1");
+              console.log(parsedRes);
+              dispatch(authStoreToken(parsedRes.id_token, parsedRes.expires_in, parsedRes.refresh_token));
+              return parsedRes.id_token;
+            }else{
+              dispatch(authClearStorage());
+            }
+          })
+        }).then(token =>{
+          if(!token){
+            throw(new Error());
+          }else{
+            return token;
+          }
+        });
     };
 };
+
+export const autoSignIn = () => {
+  return dispatch => {
+    dispatch(authGetToken())
+    .then(token => {
+      startMainTabs()
+    })
+    .catch(err => console.log("Failed to get token!"));
+  };
+}
+
+export const authClearStorage = () => {
+  return dispatch => {
+    AsyncStorage.removeItem("ccbc:auth:token");
+    AsyncStorage.removeItem("ccbc:auth:expiryDate");
+    AsyncStorage.removeItem("ccbc:auth:refreshToken");
+  }
+}
