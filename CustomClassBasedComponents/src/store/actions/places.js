@@ -1,4 +1,4 @@
-import {DELETE_PLACE,SELECT_PLACE,DESELECT_PLACE,SET_PLACES} from './actionTypes'
+import {REMOVE_PLACE,SELECT_PLACE,DESELECT_PLACE,SET_PLACES} from './actionTypes'
 import {uiStartLoading, uiStopLoading, authGetToken} from './index'
 
 export const addPlace = (placeName,location,image) => {
@@ -9,19 +9,27 @@ export const addPlace = (placeName,location,image) => {
             name : placeName,
             location: location
         };
-        fetch("https://reactnativecrash-1538034208806.firebaseio.com/places.json",{
-            method: "POST",
-            body: JSON.stringify(placeData)
-        }).catch(err => {
-            console.log(err);
-            alert("Something went wrong, Please try again!! ")
-            dispatch(uiStopLoading());
+        dispatch(authGetToken())
+        .then(token => {
+            return  fetch("https://reactnativecrash-1538034208806.firebaseio.com/places.json?auth="+token,{
+                method: "POST",
+                body: JSON.stringify(placeData)
+            })
+        })
+        .catch(() => {
+            alert(" invalid token!");
         })
         .then(res => console.log(res))
         .then(parsedResp => {
             console.log(parsedResp)
             dispatch(uiStopLoading());
+        })
+        .catch(err => {
+            console.log(err);
+            alert("Something went wrong, Please try again!! ")
+            dispatch(uiStopLoading());
         });
+        
     }
 
    
@@ -79,12 +87,42 @@ export const setPlaces = places => {
     };
 };
 
-export const deletePlace = (key) => {
-    return {
-        type : DELETE_PLACE,
-        placeKey: key
+export const deletePlace = key => {
+    return dispatch => {
+      dispatch(authGetToken())
+        .catch(() => {
+          alert("No valid token found!");
+        })
+        .then(token => {
+          dispatch(removePlace(key));
+          return fetch(
+            "https://reactnativecrash-1538034208806.firebaseio.com/places/" +
+              key +
+              ".json?auth=" +
+              token,
+            {
+              method: "DELETE"
+            }
+          );
+        })
+        .then(res => res.json())
+        .then(parsedRes => {
+          console.log("Done Done!"+ JSON.stringify(parsedRes));
+        })
+        .catch(err => {
+          alert("Something went wrong, sorry :/");
+          console.log(err);
+        });
     };
-};
+  };
+
+  export const removePlace = key => {
+    return {
+      type: REMOVE_PLACE,
+      key: key
+    };
+  };
+  
 
 export const selectPlace = (key) => {
     return {
