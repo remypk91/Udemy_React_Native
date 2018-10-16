@@ -1,9 +1,11 @@
 import {AsyncStorage} from "react-native";
-import { TRY_AUTH, AUTH_SET_TOKEN } from "./actionTypes";
+import { TRY_AUTH, AUTH_SET_TOKEN,AUTH_REMOVE_TOKEN } from "./actionTypes";
 import { uiStartLoading, uiStopLoading } from "./index";
 import startMainTabs from "../../screens/MainTabs/startMainTabs";
 
-const API_KEY = "";
+import App from "../../../App";
+
+const API_KEY = "AIzaSyDNf5CRpYvChgMRI4pMG8fI41lvg3i0iWs";
 
 export const tryAuth = (authData, authMode) => {
   return dispatch => {
@@ -148,6 +150,23 @@ export const authClearStorage = () => {
   return dispatch => {
     AsyncStorage.removeItem("ccbc:auth:token");
     AsyncStorage.removeItem("ccbc:auth:expiryDate");
-    AsyncStorage.removeItem("ccbc:auth:refreshToken");
+   return AsyncStorage.removeItem("ccbc:auth:refreshToken");
   }
 }
+
+
+export const authLogout = () => {
+  return dispatch => {
+    dispatch(authClearStorage()).then(() => {
+      console.log("Logout Pressed")
+      App();
+    });
+    dispatch(authRemoveToken());
+  };
+};
+
+export const authRemoveToken = () => {
+  return {
+    type: AUTH_REMOVE_TOKEN
+  };
+};

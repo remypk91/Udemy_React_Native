@@ -18,11 +18,12 @@ Navigation.registerComponent("CustomClassBasedComponents.AuthScreen", ()=> AuthS
 Navigation.registerComponent("CustomClassBasedComponents.SharePlaceScreen", () => SharePlaceScreen, store,Provider);
 Navigation.registerComponent("CustomClassBasedComponents.FindPlaceScreen", () => FindPlaceScreen, store, Provider);
 Navigation.registerComponent("CustomClassBasedComponents.PlaceDetailScreen", ()=> PlaceDetailScreen, store, Provider);
-Navigation.registerComponent("CustomClassBasedComponents.SideDrawer", ()=> SideDrawer);
+Navigation.registerComponent("CustomClassBasedComponents.SideDrawer", ()=> SideDrawer,store,
+Provider);
 
 // Start A App
 
-Navigation.startSingleScreenApp({
+export default () => Navigation.startSingleScreenApp({
     screen: {
         screen: "CustomClassBasedComponents.AuthScreen",
         title:"Login"

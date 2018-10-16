@@ -22,7 +22,7 @@
   NSURL *jsCodeLocation;
   // [GMSServices provideAPIKey:@"AIzaSyAoV032px3HbqfcQOGElle5KW6hfifBcS4"];
 #ifdef DEBUG
-  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
 #else
   jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
