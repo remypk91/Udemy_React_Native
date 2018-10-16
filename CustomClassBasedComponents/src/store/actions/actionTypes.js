@@ -3,6 +3,9 @@ export const REMOVE_PLACE = "REMOVE_PLACE";
 export const SELECT_PLACE = 'SELECT_PLACE';
 export const DESELECT_PLACE = 'DESELECT_PLACE';
 
+export const PLACE_ADDED = "PLACE_ADDED";
+export const START_ADD_PLACE = "START_ADD_PLACE";
+
 export const TRY_AUTH =  'TRY_AUTH';
 
 export const UI_START_LOADING = "UI_START_LOADING";

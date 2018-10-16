@@ -1,5 +1,11 @@
-import {REMOVE_PLACE,SELECT_PLACE,DESELECT_PLACE,SET_PLACES} from './actionTypes'
+import {REMOVE_PLACE,SELECT_PLACE,DESELECT_PLACE,SET_PLACES, PLACE_ADDED, START_ADD_PLACE} from './actionTypes'
 import {uiStartLoading, uiStopLoading, authGetToken} from './index'
+
+export const startAddPlace = () => {
+    return {
+        type:START_ADD_PLACE
+    };
+};
 
 export const addPlace = (placeName,location,image) => {
 
@@ -23,6 +29,7 @@ export const addPlace = (placeName,location,image) => {
         .then(parsedResp => {
             console.log(parsedResp)
             dispatch(uiStopLoading());
+            dispatch(placeAdded());
         })
         .catch(err => {
             console.log(err);
@@ -136,3 +143,10 @@ export const deselectPlace = () => {
         type : DESELECT_PLACE
     };
 };
+
+export const placeAdded = () => {
+    return {
+        type: PLACE_ADDED
+    };
+};
+

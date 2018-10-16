@@ -1,7 +1,9 @@
-import {REMOVE_PLACE,SELECT_PLACE,DESELECT_PLACE, SET_PLACES} from '../actions/actionTypes'
+import {REMOVE_PLACE,SELECT_PLACE,DESELECT_PLACE, SET_PLACES, PLACE_ADDED, START_ADD_PLACE} from '../actions/actionTypes'
+
 
 const initialState = {
-    places: []
+    places: [],
+    placeAdded: false
 };
 const reducer = (state = initialState, action) =>{
     switch(action.type){
@@ -31,6 +33,16 @@ const reducer = (state = initialState, action) =>{
             ...state,
             selectedPlace : null
         };
+        case START_ADD_PLACE:
+        return{
+            ...state,
+            placeAdded: false
+        };
+        case PLACE_ADDED:
+        return{
+            ...state,
+            placeAdded: true
+        }
         default:
         return state;
     }

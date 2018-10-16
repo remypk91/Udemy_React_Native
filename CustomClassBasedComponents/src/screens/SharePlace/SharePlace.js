@@ -12,6 +12,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import validate from "../../utility/validation";
 import ButtonWithBackground from "../../components/UI/ButtonWithBackground/ButtonWithBackground";
 import DefaultInput from "../../components/UI/DefaultInput/DefaultInput";
+import {startAddPlace} from "../../store/actions/index"
 
 
 class SharePlaceScreen extends  Component{
@@ -20,26 +21,41 @@ class SharePlaceScreen extends  Component{
         navBarButtonColor : "orange"
     }
 
-    state = {
-        controls: {
-            placeName: {
-                value: "",
-                valid: false,
-                touched: false,
-                validationRules: {
-                    notEmpty: true
-                }
-            },
-            location : {
-                value:null,
-                valid: false
-            }, 
-            image : {
-                value : null,
-                valid : false
-            }
+    componentWillMount(){
+        this.reset();
+    }
+
+    componentDidUpdate(){
+        if (this.props.placeAdded){
+            this.props.navigator.switchToTab({tabIndex: 0})
+            this.props.onStartAddPlace();
         }
-    };
+    }
+
+    reset = () => {
+        this.setState({
+            controls: {
+                placeName: {
+                    value: "",
+                    valid: false,
+                    touched: false,
+                    validationRules: {
+                        notEmpty: true
+                    }
+                },
+                location : {
+                    value:null,
+                    valid: false
+                }, 
+                image : {
+                    value : null,
+                    valid : false
+                }
+            }
+        });
+    }
+
+    
 
     constructor(props){
         super(props);
@@ -49,6 +65,11 @@ class SharePlaceScreen extends  Component{
     }
 
     onNavigatorEvent = event => {
+        if (event.type === "ScreenChangedEvent"){
+            if(event.id === "willAppear"){
+                this.props.onStartAddPlace();
+            }
+        }
         if (event.type === "NavBarButtonPress"){
             if (event.id === "sideDrawerToggle") {
                 this.props.navigator.toggleDrawer({
@@ -106,11 +127,16 @@ class SharePlaceScreen extends  Component{
     }
 
     placeAddedHandler = () => {
-        this.props.onAddPlace(this.state.controls.placeName.value,
+        this.props.onAddPlace(
+            this.state.controls.placeName.value,
              this.state.controls.location.value,
-             this.state.controls.image.value);
+             this.state.controls.image.value
+             );
+             this.reset();
+             this.imagePicker.reset();
+             this.locationPicker.reset();
 
-    }
+    };
 
     render(){
 
@@ -133,8 +159,8 @@ class SharePlaceScreen extends  Component{
             <KeyboardAwareScrollView  behavior="padding">
                 <View  style = {styles.container}>
                     <MainText><HeadingText>Share a Place with us!</HeadingText></MainText>
-                    <PickImage onImagePicked={this.imagePickedHandler}/>
-                    <PickLocation onLocationPick={this.locationPickedHandler}/>
+                    <PickImage onImagePicked={this.imagePickedHandler} ref= {ref => (this.imagePicker = ref)}/>
+                    <PickLocation onLocationPick={this.locationPickedHandler} ref={ref => (this.locationPicker = ref)}/>
                 <PlaceInput
 
                     placeData={this.state.controls.placeName}
@@ -153,13 +179,15 @@ class SharePlaceScreen extends  Component{
 
 const mapStateToProps = state => {
     return {
-        isLoading : state.ui.isLoading
+        isLoading : state.ui.isLoading,
+        placeAdded: state.places.placeAdded
     }
 }
 
 const  mapDispatchToProps = dispatch => {
    return {
-       onAddPlace : (placeName,location,image) => dispatch(addPlace(placeName,location, image))
+       onAddPlace : (placeName,location,image) => dispatch(addPlace(placeName,location, image)),
+       onStartAddPlace : () => dispatch(startAddPlace())
    };
 };
 
