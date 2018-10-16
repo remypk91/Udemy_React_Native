@@ -53,9 +53,10 @@ export const tryAuth = (authData, authMode) => {
 export const authStoreToken = (token, expiresIn, refreshToken) => {
 
   return dispatch => {
-    dispatch(authSetToken(token));
+    
     const now = new Date();
     const expiryDate = now.getTime() + expiresIn * 1000;
+    dispatch(authSetToken(token,expiryDate));
     // console.log(now, new Date(expiryDate));
     AsyncStorage.setItem("ccbc:auth:token", token);
     AsyncStorage.setItem("ccbc:auth:expiryDate", expiryDate.toString());
@@ -63,10 +64,11 @@ export const authStoreToken = (token, expiresIn, refreshToken) => {
   };
 };
 
-export const authSetToken = token => {
+export const authSetToken = (token, expiryDate) => {
   return {
     type: AUTH_SET_TOKEN,
-    token: token
+    token: token,
+    expiryDate:expiryDate
   };
 };
 
@@ -74,7 +76,8 @@ export const authGetToken = () => {
     return (dispatch, getState) => {
         const promise = new Promise((resolve, reject) => {
             const token = getState().auth.token;
-            if (!token) {
+            const expiryDate = getState().auth.expiryDate;
+            if (!token || new Date(expiryDate) <= new Date()) {
               let fetchedToken;
                 AsyncStorage.getItem("ccbc:auth:token")
                 .catch(err => reject())
